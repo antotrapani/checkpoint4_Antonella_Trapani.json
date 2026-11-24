@@ -1,0 +1,730 @@
+{
+  "name": "Clase 4",
+  "nodes": [
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "filters": {
+          "q": "-from:me"
+        }
+      },
+      "type": "n8n-nodes-base.gmailTrigger",
+      "typeVersion": 1.4,
+      "position": [
+        0,
+        0
+      ],
+      "id": "c74fc34a-e17b-4cfa-bc19-2c531b890db2",
+      "name": "Gmail Trigger",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "tRtoMKVddPeYgng6",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 4
+          },
+          "conditions": [
+            {
+              "id": "cc14ae82-2ba9-48d1-9690-cd1822e52922",
+              "leftValue": "={{ $json.Subject }}",
+              "rightValue": "auto-replay",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            },
+            {
+              "id": "1b8bb05c-718a-4846-a536-c7951bbd68db",
+              "leftValue": "={{ $json.Subject }}",
+              "rightValue": "Automatic reply",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            },
+            {
+              "id": "b93478e4-495f-49b1-bf98-b4812c53c4df",
+              "leftValue": "={{ $json.Subject }}",
+              "rightValue": "out of office",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            },
+            {
+              "id": "0a5e16f5-d57a-4a38-afa4-5cf970b5187e",
+              "leftValue": "={{ $json.Subject }}",
+              "rightValue": "undeliverable",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            },
+            {
+              "id": "98f74ae7-4144-42ba-9b4a-4aa303397814",
+              "leftValue": "={{ $json.Subject }}",
+              "rightValue": "mailer-deamon",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            }
+          ],
+          "combinator": "or"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.4,
+      "position": [
+        224,
+        0
+      ],
+      "id": "0fe09b62-a4c6-4893-a779-3cec1551def1",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "fa03a3b5-6f86-4ba6-8101-ad41d927c13a",
+              "name": "Nombre",
+              "value": "={{ $json.From.includes('<') ? $json.From.split('<')[0].replace(/\"/g, '').trim() : '' }}",
+              "type": "string"
+            },
+            {
+              "id": "f9c0f902-20e5-4a23-b741-05caef6d4c85",
+              "name": "Mail",
+              "value": "={{ ($json.From.match(/<([^>]+)>/)?.[1] ?? $json.From).trim() }}",
+              "type": "string"
+            },
+            {
+              "id": "48fdbf16-0e5f-44f8-8b2d-6b0cfff5b1c1",
+              "name": "Asunto",
+              "value": "={{ $('Gmail Trigger').item.json.Subject }}",
+              "type": "string"
+            },
+            {
+              "id": "6b13def9-46bb-4183-a04f-d9cb21a31696",
+              "name": "Cuerpo",
+              "value": "={{ $('Gmail Trigger').item.json.snippet }}",
+              "type": "string"
+            },
+            {
+              "id": "59e5138a-7004-4dbb-acfc-ae72d0f7fe54",
+              "name": "threadId",
+              "value": "={{ $('Gmail Trigger').item.json.threadId }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.5,
+      "position": [
+        464,
+        112
+      ],
+      "id": "a7a6a717-5699-4082-a3f8-683b7ae9d88b",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "10Z83X7CSyeWAjohULi6Rz_IBBwWsG609d_laOmGgP0k",
+          "mode": "list",
+          "cachedResultName": "CRM Clase 4",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/10Z83X7CSyeWAjohULi6Rz_IBBwWsG609d_laOmGgP0k/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 208547816,
+          "mode": "list",
+          "cachedResultName": "Log error",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/10Z83X7CSyeWAjohULi6Rz_IBBwWsG609d_laOmGgP0k/edit#gid=208547816"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "threadId": "={{ $('Gmail Trigger').item.json.threadId }}",
+            "From": "={{ $('Gmail Trigger').item.json.From }}",
+            "Subject": "={{ $('Gmail Trigger').item.json.Subject }}",
+            "Date": "={{ $now}}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "threadId",
+              "displayName": "threadId",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "From",
+              "displayName": "From",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Subject",
+              "displayName": "Subject",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Date",
+              "displayName": "Date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        800,
+        -224
+      ],
+      "id": "418a2bb9-6c2b-4fd2-a11d-eab4a31dddfc",
+      "name": "Registrar log",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "d6Le2AVZYQLO8ubb",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 4
+          },
+          "conditions": [
+            {
+              "id": "c59aae0f-9381-4c34-8aaa-7930dd7bd29f",
+              "leftValue": "={{ $('Gmail Trigger').item.json.From }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.4,
+      "position": [
+        640,
+        112
+      ],
+      "id": "1cf74c3a-ad66-4c1b-8ff3-edfab1f8c1c5",
+      "name": "If1"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{'Asunto: '+$json.Asunto+ ' Cuerpo: '+$json.Cuerpo}}",
+        "options": {
+          "systemMessage": "ROL: Eres un asistente de soporte de la empresa Binance, una billetera digital y de prétamos personales. Lees el mail de un cliente y preparas (1) clasificación y (2) un BORRADOR de respuesta que una persona revisará. Nunca envías nada.",
+          "maxIterations": 10
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        864,
+        16
+      ],
+      "id": "4fed651b-7d77-491e-acaf-ac75d83a1847",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1.2,
+      "position": [
+        864,
+        240
+      ],
+      "id": "bb687c6c-2b02-4f22-b66d-3115aae243b8",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": null,
+          "name": "",
+          "__aiGatewayManaged": true
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "10Z83X7CSyeWAjohULi6Rz_IBBwWsG609d_laOmGgP0k",
+          "mode": "list",
+          "cachedResultName": "CRM Clase 4",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/10Z83X7CSyeWAjohULi6Rz_IBBwWsG609d_laOmGgP0k/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 253543557,
+          "mode": "list",
+          "cachedResultName": "Clientes",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/10Z83X7CSyeWAjohULi6Rz_IBBwWsG609d_laOmGgP0k/edit#gid=253543557"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "email",
+              "lookupValue": "={{ $('Edit Fields').item.json.Mail }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        1200,
+        16
+      ],
+      "id": "2081ed17-b3fc-4100-a40e-4d6a1c2f4cc8",
+      "name": "Get row(s) in sheet",
+      "alwaysOutputData": true,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "d6Le2AVZYQLO8ubb",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 4
+          },
+          "conditions": [
+            {
+              "id": "c929f13d-2c74-4715-98d1-72071eb1a965",
+              "leftValue": "={{ $json.email }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "exists",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.4,
+      "position": [
+        1424,
+        16
+      ],
+      "id": "e9065659-6537-4f46-8770-58d77089ce5c",
+      "name": "If2"
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "10Z83X7CSyeWAjohULi6Rz_IBBwWsG609d_laOmGgP0k",
+          "mode": "list",
+          "cachedResultName": "CRM Clase 4",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/10Z83X7CSyeWAjohULi6Rz_IBBwWsG609d_laOmGgP0k/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 253543557,
+          "mode": "list",
+          "cachedResultName": "Clientes",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/10Z83X7CSyeWAjohULi6Rz_IBBwWsG609d_laOmGgP0k/edit#gid=253543557"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "email": "={{ $json.correo }}",
+            "nombre": "={{ $json.nombre }}",
+            "fecha_alta": "={{ $now.toISO() }}"
+          },
+          "matchingColumns": [
+            "email"
+          ],
+          "schema": [
+            {
+              "id": "email",
+              "displayName": "email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "nombre",
+              "displayName": "nombre",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "fecha_alta",
+              "displayName": "fecha_alta",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        1792,
+        112
+      ],
+      "id": "d9eb6e67-31b0-41c9-85d2-e58e02aba41e",
+      "name": "Append or update row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "d6Le2AVZYQLO8ubb",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "draft",
+        "subject": "=Re: {{ $('Gmail Trigger').item.json.Subject }}",
+        "message": "=Enviar esta respuesta: {{ $('AI Agent').item.json.output }} para el cliente: {{ $json.nombre }}, mail: {{ $json.email }}",
+        "options": {
+          "threadId": "={{ $('Gmail Trigger').item.json.threadId }}"
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        2000,
+        0
+      ],
+      "id": "249c4d18-9d2c-4219-ab91-74db213dbd94",
+      "name": "Create a draft",
+      "webhookId": "be9422ed-8502-4353-8266-894214d2badb",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "tRtoMKVddPeYgng6",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "0fdf510d-96df-42da-adea-3f87683760e9",
+              "name": "nombre",
+              "value": "={{ $('Edit Fields').item.json.From_email.includes('<') ? $('Edit Fields').item.json.From_email.split('<')[0].replace(/\"/g, '').trim() : '' }}",
+              "type": "string"
+            },
+            {
+              "id": "d7086e19-075f-4c59-9410-7b410a02fc0b",
+              "name": "correo",
+              "value": "={{ ($('Edit Fields').item.json.From_email.match(/<([^>]+)>/)?.[1] ?? $('Edit Fields').item.json.From_email).trim() }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.5,
+      "position": [
+        1600,
+        112
+      ],
+      "id": "f71f8e7b-105e-4444-b6ac-53bda142d6fb",
+      "name": "Edit Fields1"
+    },
+    {
+      "parameters": {
+        "chatId": "8758377392",
+        "text": "Hay un nuevo mensaje en borrador",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        2192,
+        0
+      ],
+      "id": "50cb53d8-6d85-4b0c-8711-cd6696b39da5",
+      "name": "Send a text message",
+      "webhookId": "04d92754-8f4a-42b2-b816-72710457477c",
+      "credentials": {
+        "telegramApi": {
+          "id": "xKJ3YD2dG5y0b0fj",
+          "name": "Telegram account"
+        }
+      }
+    }
+  ],
+  "pinData": {
+    "Gmail Trigger": [
+      {
+        "json": {
+          "id": "1a2040e5723a7db6",
+          "threadId": "1a2040e5723a7db6",
+          "snippet": "Mensaje sin remitente interpretable",
+          "payload": {
+            "mimeType": "multipart/alternative"
+          },
+          "sizeEstimate": 84233,
+          "historyId": "6958329",
+          "internalDate": "1795364270000",
+          "labels": [
+            {
+              "id": "INBOX",
+              "name": "INBOX"
+            },
+            {
+              "id": "CATEGORY_PROMOTIONS",
+              "name": "CATEGORY_PROMOTIONS"
+            },
+            {
+              "id": "UNREAD",
+              "name": "UNREAD"
+            }
+          ],
+          "From": "",
+          "To": "<antonellatrapanig@gmail.com>",
+          "Subject": "Hola"
+        }
+      }
+    ]
+  },
+  "connections": {
+    "Gmail Trigger": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Registrar log",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "If1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If1": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Registrar log",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Get row(s) in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet": {
+      "main": [
+        [
+          {
+            "node": "If2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If2": {
+      "main": [
+        [
+          {
+            "node": "Create a draft",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Edit Fields1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Append or update row in sheet": {
+      "main": [
+        [
+          {
+            "node": "Create a draft",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields1": {
+      "main": [
+        [
+          {
+            "node": "Append or update row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a text message": {
+      "main": [
+        []
+      ]
+    },
+    "Create a draft": {
+      "main": [
+        [
+          {
+            "node": "Send a text message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "9fee2877-3052-4f99-99aa-c3c1b22465e1",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "0e017f61ea365893f40018fa0193177e48cd2364828f44938239516131931b18"
+  },
+  "nodeGroups": [],
+  "id": "8a9HCQcZUCdqcFY7",
+  "tags": []
+}
